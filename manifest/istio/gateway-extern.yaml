@@ -1,0 +1,29 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: istio-ingress-external
+  namespace: istio-system
+spec:
+  gatewayClassName: istio
+  addresses:
+    - type: IPAddress
+      value: 192.168.178.5
+  listeners:
+    - name: http
+      hostname: "*.example.com"
+      protocol: HTTP
+      port: 80
+      allowedRoutes:
+        namespaces:
+          from: All
+    - name: https
+      hostname: "*.example.com"
+      protocol: HTTPS
+      port: 443
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: wildcard-example.com-tls
+      allowedRoutes:
+        namespaces:
+          from: All

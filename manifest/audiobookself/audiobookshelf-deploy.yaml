@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: audiobookshelf
+  namespace: audiobookshelf
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: audiobookshelf
+  template:
+    metadata:
+      labels:
+        app: audiobookshelf
+    spec:
+      securityContext:
+        runAsUser: 99
+        runAsGroup: 100
+        fsGroup: 100
+      containers:
+        - name: audiobookshelf
+          image: ghcr.io/advplyr/audiobookshelf:latest
+          ports:
+            - containerPort: 80
+          env:
+            - name: METADATA_PATH
+              value: /config/metadata
+          volumeMounts:
+            - name: config
+              mountPath: /config
+              subPath: kubernetes/audiobookshelf
+            - name: media
+              mountPath: /audiobooks
+              subPath: Audio/Hörbücher
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: pvc-nfs-appdata
+        - name: media
+          persistentVolumeClaim:
+            claimName: pvc-nfs-media
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: audiobookshelf
+  namespace: audiobookshelf
+spec:
+  type: ClusterIP
+  selector:
+    app: audiobookshelf
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-doku-wiki
+  namespace: wiki
+spec:
+  storageClassName: nfs-archive
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi

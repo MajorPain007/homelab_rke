@@ -1,0 +1,33 @@
+globalArguments:
+  - "--providers.kubernetesingress.ingressendpoint.publishedservice=traefik-system/traefik"
+service:
+  spec:
+    loadBalancerIP: ""
+
+additionalArguments:
+  - "--certificatesresolvers.myresolver.acme.email=deine@email.de"
+  - "--certificatesresolvers.myresolver.acme.storage=/data/acme.json"
+  - "--certificatesresolvers.myresolver.acme.dnschallenge=true"
+  - "--certificatesresolvers.myresolver.acme.dnschallenge.provider=ipv64"
+  - "--certificatesresolvers.myresolver.acme.dnschallenge.delaybeforecheck=0"
+
+env:
+  - name: "IPV64_API_KEY"
+    valueFrom:
+      secretKeyRef:
+        name: ipv64-apikey
+        key: api-key
+
+volumes:
+  - name: data
+    persistentVolumeClaim:
+      claimName: traefik-data
+
+volumeMounts:
+  - name: data
+    mountPath: /data
+
+
+# kubectl create secret generic ipv64-apikey \
+#   --from-literal=api-key="DEIN_IPV64_API_KEY" \
+#   -n traefik

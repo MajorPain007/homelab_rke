@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: dokuwiki
+  name: dokuwiki
+  namespace: wiki
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dokuwiki
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: dokuwiki
+    spec:
+      containers:
+      - env:
+        - name: DOKUWIKI_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: dokuwiki-secrets
+              key: username
+        - name: DOKUWIKI_FULL_NAME
+          value: Dokuwiki test
+        - name: DOKUWIKI_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: dokuwiki-secrets
+              key: password
+        - name: DOKUWIKI_EMAIL
+          value: 
+        - name: DOKUWIKI_WIKI_NAME
+          value: UHOH DokuWiki
+        - name: APACHE_HTTP_PORT_NUMBER
+          value: "8080"
+        image: git.cooltux.net/marko/docker-dokuwiki-debian12:20250508.1.0-debian-12-r16
+        name: dokuwiki
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        resources: {}
+      #   volumeMounts:
+      #   - name: doku-wiki
+      #     mountPath: "/bitnami/dokuwiki"
+      # volumes:
+      # - name: doku-wiki
+      #   persistentVolumeClaim:
+      #     claimName: pvc-doku-wiki
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: svc-dokuwiki
+  name: svc-dokuwiki
+  namespace: wiki
+spec:
+  ports:
+  - name: "80"
+    port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: dokuwiki
+  type: ClusterIP

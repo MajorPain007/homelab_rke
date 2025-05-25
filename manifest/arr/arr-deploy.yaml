@@ -1,0 +1,551 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jellyseerr
+  namespace: arr
+spec:
+  selector:
+    matchLabels:
+      app: jellyseerr
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: jellyseerr
+    spec:
+      securityContext:
+        runAsUser: 99
+        runAsGroup: 100
+        fsGroup: 100
+      containers:
+      - name: jellyseerr
+        image: fallenbagel/jellyseerr:latest
+        env:
+        - name: TZ
+          value: Europe/Berlin
+        - name: LOG_LEVEL
+          value: debug
+        ports:
+        - containerPort: 5055
+        volumeMounts:
+        - name: config
+          mountPath: /app/config
+          subPath: kubernetes/arr/jellyseerr
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: pvc-appdata
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: radarr
+  namespace: arr
+spec:
+  selector:
+    matchLabels:
+      app: radarr
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: radarr
+    spec:
+      securityContext:
+        runAsUser: 99
+        runAsGroup: 100
+        fsGroup: 100
+      containers:
+      - name: radarr
+        image: lscr.io/linuxserver/radarr:latest
+        env:
+        - name: TZ
+          value: Europe/Berlin
+        ports:
+        - containerPort: 7878
+        volumeMounts:
+        - name: config
+          mountPath: /config
+          subPath: kubernetes/arr/radarr
+        - name: media
+          mountPath: /data
+        - name: downloads
+          mountPath: /downloads
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: pvc-appdata
+        - name: media
+          persistentVolumeClaim:
+            claimName: pvc-media
+        - name: downloads
+          persistentVolumeClaim:
+            claimName: pvc-download
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: radarr-kids
+  namespace: arr
+spec:
+  selector:
+    matchLabels:
+      app: radarr-kids
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: radarr-kids
+    spec:
+      securityContext:
+        runAsUser: 99
+        runAsGroup: 100
+        fsGroup: 100
+      containers:
+      - name: radarr-kids
+        image: lscr.io/linuxserver/radarr:latest
+        env:
+        - name: TZ
+          value: Europe/Berlin
+        ports:
+        - containerPort: 7878
+        volumeMounts:
+        - name: config
+          mountPath: /config
+          subPath: kubernetes/arr/radarr_kids
+        - name: media
+          mountPath: /data
+        - name: downloads
+          mountPath: /downloads
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: pvc-appdata
+        - name: media
+          persistentVolumeClaim:
+            claimName: pvc-media
+        - name: downloads
+          persistentVolumeClaim:
+            claimName: pvc-download
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sonarr
+  namespace: arr
+spec:
+  selector:
+    matchLabels:
+      app: sonarr
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: sonarr
+    spec:
+      securityContext:
+        runAsUser: 99
+        runAsGroup: 100
+        fsGroup: 100
+      containers:
+      - name: sonarr
+        image: lscr.io/linuxserver/sonarr:latest
+        env:
+        - name: TZ
+          value: Europe/Berlin
+        ports:
+        - containerPort: 8989
+        volumeMounts:
+        - name: config
+          mountPath: /config
+          subPath: kubernetes/arr/sonarr
+        - name: media
+          mountPath: /data
+        - name: downloads
+          mountPath: /downloads
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: pvc-appdata
+        - name: media
+          persistentVolumeClaim:
+            claimName: pvc-media
+        - name: downloads
+          persistentVolumeClaim:
+            claimName: pvc-download
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sonarr-as
+  namespace: arr
+spec:
+  selector:
+    matchLabels:
+      app: sonarr-as
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: sonarr-as
+    spec:
+      securityContext:
+        runAsUser: 99
+        runAsGroup: 100
+        fsGroup: 100
+      containers:
+      - name: sonarr-as
+        image: lscr.io/linuxserver/sonarr:latest
+        env:
+        - name: TZ
+          value: Europe/Berlin
+        ports:
+        - containerPort: 8989
+        volumeMounts:
+        - name: config
+          mountPath: /config
+          subPath: kubernetes/arr/sonarr_as
+        - name: media
+          mountPath: /data
+        - name: downloads
+          mountPath: /downloads
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: pvc-appdata
+        - name: media
+          persistentVolumeClaim:
+            claimName: pvc-media
+        - name: downloads
+          persistentVolumeClaim:
+            claimName: pvc-download
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: readarr
+  namespace: arr
+spec:
+  selector:
+    matchLabels:
+      app: readarr
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: readarr
+    spec:
+      securityContext:
+        runAsUser: 99
+        runAsGroup: 100
+        fsGroup: 100
+      containers:
+      - name: readarr
+        image: lscr.io/linuxserver/readarr:develop
+        env:
+        - name: TZ
+          value: Europe/Berlin
+        ports:
+        - containerPort: 8787
+        volumeMounts:
+        - name: config
+          mountPath: /config
+          subPath: kubernetes/arr/readarr
+        - name: media
+          mountPath: /data
+        - name: downloads
+          mountPath: /downloads
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: pvc-appdata
+        - name: media
+          persistentVolumeClaim:
+            claimName: pvc-media
+        - name: downloads
+          persistentVolumeClaim:
+            claimName: pvc-download
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prowlarr
+  namespace: arr
+spec:
+  selector:
+    matchLabels:
+      app: prowlarr
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: prowlarr
+    spec:
+      securityContext:
+        runAsUser: 99
+        runAsGroup: 100
+        fsGroup: 100
+      containers:
+      - name: prowlarr
+        image: lscr.io/linuxserver/prowlarr:latest
+        env:
+        - name: TZ
+          value: Europe/Berlin
+        ports:
+        - containerPort: 9696
+        volumeMounts:
+        - name: config
+          mountPath: /config
+          subPath: kubernetes/arr/prowlarr
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: pvc-appdata
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bazarr
+  namespace: arr
+spec:
+  selector:
+    matchLabels:
+      app: bazarr
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: bazarr
+    spec:
+      securityContext:
+        runAsUser: 99
+        runAsGroup: 100
+        fsGroup: 100
+      containers:
+      - name: bazarr
+        image: lscr.io/linuxserver/bazarr:latest
+        env:
+        - name: TZ
+          value: Europe/Berlin
+        ports:
+        - containerPort: 6767
+        volumeMounts:
+        - name: config
+          mountPath: /config
+          subPath: kubernetes/arr/bazarr
+        - name: downloads
+          mountPath: /downloads
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: pvc-appdata
+        - name: downloads
+          persistentVolumeClaim:
+            claimName: pvc-download
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sabnzbd
+  namespace: arr
+spec:
+  selector:
+    matchLabels:
+      app: sabnzbd
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: sabnzbd
+    spec:
+      securityContext:
+        runAsUser: 99
+        runAsGroup: 100
+        fsGroup: 100
+      containers:
+      - name: sabnzbd
+        image: lscr.io/linuxserver/sabnzbd:latest
+        env:
+        - name: TZ
+          value: Europe/Berlin
+        ports:
+        - containerPort: 8080
+        - containerPort: 9090
+        volumeMounts:
+        - name: config
+          mountPath: /config
+          subPath: kubernetes/arr/sabnzbd
+        - name: media
+          mountPath: /data
+        - name: downloads
+          mountPath: /downloads
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: pvc-appdata
+        - name: media
+          persistentVolumeClaim:
+            claimName: pvc-media
+        - name: downloads
+          persistentVolumeClaim:
+            claimName: pvc-download
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: umlautadaptarr
+  namespace: arr
+spec:
+  selector:
+    matchLabels:
+      app: umlautadaptarr
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: umlautadaptarr
+    spec:
+      securityContext:
+        runAsUser: 99
+        runAsGroup: 100
+        fsGroup: 100
+      containers:
+      - name: umlautadaptarr
+        image: pcjones/umlautadaptarr:latest
+        env:
+        - name: TZ
+          value: Europe/Berlin
+        # Füge hier deine weiteren spezifischen ENV-Variablen für die Adaptarr-Integration ein!
+        ports:
+        - containerPort: 5006
+        - containerPort: 5005
+        volumeMounts:
+        - name: config
+          mountPath: /config
+          subPath: kubernetes/arr/umlautadaptarr
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: pvc-appdata
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jellyseerr
+  namespace: arr
+spec:
+  selector:
+    app: jellyseerr
+  ports:
+    - protocol: TCP
+      port: 5055
+      targetPort: 5055
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: radarr
+  namespace: arr
+spec:
+  selector:
+    app: radarr
+  ports:
+    - protocol: TCP
+      port: 7878
+      targetPort: 7878
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: radarr-kids
+  namespace: arr
+spec:
+  selector:
+    app: radarr-kids
+  ports:
+    - protocol: TCP
+      port: 7878
+      targetPort: 7878
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sonarr
+  namespace: arr
+spec:
+  selector:
+    app: sonarr
+  ports:
+    - protocol: TCP
+      port: 8989
+      targetPort: 8989
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sonarr-as
+  namespace: arr
+spec:
+  selector:
+    app: sonarr-as
+  ports:
+    - protocol: TCP
+      port: 8989
+      targetPort: 8989
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: readarr
+  namespace: arr
+spec:
+  selector:
+    app: readarr
+  ports:
+    - protocol: TCP
+      port: 8787
+      targetPort: 8787
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prowlarr
+  namespace: arr
+spec:
+  selector:
+    app: prowlarr
+  ports:
+    - protocol: TCP
+      port: 9696
+      targetPort: 9696
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bazarr
+  namespace: arr
+spec:
+  selector:
+    app: bazarr
+  ports:
+    - protocol: TCP
+      port: 6767
+      targetPort: 6767
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sabnzbd
+  namespace: arr
+spec:
+  selector:
+    app: sabnzbd
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+      name: http
+    - protocol: TCP
+      port: 9090
+      targetPort: 9090
+      name: https

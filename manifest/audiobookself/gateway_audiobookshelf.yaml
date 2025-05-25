@@ -1,0 +1,35 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: audiobookshelf-redirect-http
+  namespace: audiobookshelf
+spec:
+  parentRefs:
+    - name: istio-ingress-internal
+      namespace: istio-system
+      sectionName: http
+  hostnames:
+    - audio.example.com
+  rules:
+    - filters:
+        - type: RequestRedirect
+          requestRedirect:
+            scheme: https
+            statusCode: 301
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: audiobookshelf-https
+  namespace: audiobookshelf
+spec:
+  parentRefs:
+    - name: istio-ingress-internal
+      namespace: istio-system
+      sectionName: https
+  hostnames:
+    - audio.example.com
+  rules:
+    - backendRefs:
+      - name: audiobookshelf
+        port: 80

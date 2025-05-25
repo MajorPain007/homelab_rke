@@ -1,0 +1,53 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: homepage-redirect-http
+  namespace: webserver
+spec:
+  parentRefs:
+    - name: istio-ingress
+      namespace: istio-system
+      sectionName: http
+  hostnames:
+    - web.example.com
+  rules:
+    - filters:
+        - type: RequestRedirect
+          requestRedirect:
+            scheme: https
+            statusCode: 301
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: homepage-https
+  namespace: webserver
+spec:
+  parentRefs:
+    - name: istio-ingress
+      namespace: istio-system
+      sectionName: https
+  hostnames:
+    - web.example.com
+  rules:
+    - filters:
+        - type: RequestHeaderModifier
+          requestHeaderModifier:
+            add:
+              - name: Strict-Transport-Security
+                value: max-age=15552000; includeSubDomains; preload
+              - name: X-Frame-Options
+                value: SAMEORIGIN
+              - name: X-XSS-Protection
+                value: "1; mode=block"
+              - name: X-Content-Type-Options
+                value: nosniff
+              - name: Referrer-Policy
+                value: strict-origin-when-cross-origin
+              - name: Cache-Control
+                value: no-store
+              - name: X-Forwarded-Proto
+                value: https
+      backendRefs:
+        - name: svc-homepage
+          port: 80

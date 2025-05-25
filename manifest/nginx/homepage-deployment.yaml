@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: homepage
+  name: homepage
+  namespace: webserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: homepage
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: homepage
+        run: nginx
+    spec:
+      # nodeName: worker2-6
+      containers:
+      - image: docker.io/nginx:1.27.2-alpine
+        name: nginx
+        # command: 
+        #   -/bin/sh
+        #   - -c
+        #   - env
+        # env:
+        #   - name: INDEX_HTML
+        #     valueFrom:
+        #       configMapKeyRef:
+        #         name: indext-html-configmap
+        #         key: index.html
+        ports:
+        - containerPort: 80
+        resources: {}
+      #   volumeMounts:
+      #   - mountPath: /usr/share/nginx/html
+      #     name: website-volume
+      # volumes:
+      # - name: website-volume
+      #   persistentVolumeClaim:
+      #     claimName: pvc-website-data
+        # hostPath:
+        #   type: DirectoryOrCreate
+        #   path: /mnt/website
+        # configMap:
+        #   name: indext-html-configmap
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: svc-homepage
+  name: svc-homepage
+  namespace: webserver
+spec:
+  ports:
+  - name: "80"
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    run: nginx
+  type: ClusterIP

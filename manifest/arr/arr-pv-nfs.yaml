@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-nfs-appdata-arr
+spec:
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    path: /mnt/user/appdata
+    server: 192.168.178.3
+  persistentVolumeReclaimPolicy: Retain
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-nfs-media-arr
+spec:
+  capacity:
+    storage: 2000Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    path: /mnt/user/Media
+    server: 192.168.178.3
+  persistentVolumeReclaimPolicy: Retain
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-nfs-downloads-arr
+spec:
+  capacity:
+    storage: 200Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    path: /mnt/user/Downloads
+    server: 192.168.178.3
+  persistentVolumeReclaimPolicy: Retain

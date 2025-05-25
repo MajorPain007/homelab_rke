@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-appdata
+  namespace: arr
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  volumeName: pv-nfs-appdata-arr
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-media
+  namespace: arr
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 2000Gi
+  volumeName: pv-nfs-media-arr
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-download
+  namespace: arr
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 200Gi
+  volumeName: pv-nfs-downloads-arr
