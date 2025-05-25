@@ -1,2 +1,2 @@
-# homelab_rke
+# homelab rke
 kubernetes manifests
